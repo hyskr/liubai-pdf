@@ -34,9 +34,31 @@ async function findBrowser(explicit) {
   throw new Error('找不到 Chrome、Chromium 或 Edge。请安装浏览器或使用 --browser 指定可执行文件。');
 }
 
-export async function exportPdf(input, output, browserPath) {
+export function layoutCss(options = {}) {
+  const compact = options.compact;
+  function number(value, fallback, name, min, max) {
+    if (value === undefined) return fallback;
+    const n = Number(value);
+    if (typeof value === 'string' && !value.trim() || !Number.isFinite(n) || n < min || n > max)
+      throw new Error(`${name} 必须是 ${min} 到 ${max} 之间的数字。`);
+    return n;
+  }
+  const margin = number(options.margin, compact ? 12 : 18, '页边距', 0, 80);
+  const lineHeight = number(options.lineHeight, compact ? 1.55 : 1.9, '行距', 1, 3);
+  const paragraphSpacing = number(options.paragraphSpacing, compact ? 8 : 14, '段落间距', 0, 80);
+  const fontSize = number(options.fontSize, 16, '字号', 8, 32);
+  return `@page { margin: ${margin}mm; }
+body { font-size: ${fontSize}px; line-height: ${lineHeight}; }
+p { line-height: ${lineHeight}; margin: ${paragraphSpacing}px 0; }
+${compact ? `h1 { margin: 16px 0 10px; } h2 { margin: 16px 0 8px; }
+h3, h4, h5, h6 { margin: 12px 0 6px; } table { margin: 12px 0; }
+th, td { padding: 6px; } pre { padding: 10px; } hr { margin: 16px 0; }
+h1::after, h2::after, h3::after, h4::after, h5::after, h6::after { height: 70px; margin-bottom: -70px; }` : ''}`;
+}
+
+export async function exportPdf(input, output, browserPath, options = {}) {
   const source = await readFile(input, 'utf8');
-  const css = await readFile(join(here, 'style.css'), 'utf8');
+  const css = (await readFile(join(here, 'style.css'), 'utf8')) + '\n' + layoutCss(options);
   const katexCss = pathToFileURL(require.resolve('katex/dist/katex.min.css')).href;
   const base = pathToFileURL(dirname(input) + '/').href;
   const html = `<!doctype html><html><head><meta charset="utf-8"><title>${escape(basename(input, extname(input)))}</title><base href="${escape(base)}"><link rel="stylesheet" href="${escape(katexCss)}"><style>${css}</style></head><body>${renderMarkdown(source)}</body></html>`;
