@@ -1,0 +1,29 @@
+name: Test action
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 安装中文字体
+        run: sudo apt-get update && sudo apt-get install -y fonts-noto-cjk
+      - name: 导出 PDF
+        id: export
+        uses: ./
+        with:
+          input: test/fixtures/action.md
+          output: test/fixtures/action.pdf
+          compact: 'true'
+          margin: '15'
+      - name: 检查 PDF
+        shell: bash
+        env:
+          PDF_PATH: ${{ steps.export.outputs.pdf }}
+        run: |
+          test -s "$PDF_PATH"
+          test "$(head -c 5 "$PDF_PATH")" = '%PDF-'
+      - name: 测试 CLI
+        run: npm test

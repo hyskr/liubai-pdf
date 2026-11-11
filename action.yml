@@ -1,0 +1,60 @@
+name: 留白 Markdown 转 PDF
+description: 将 Markdown 导出为留白风格的 A4 PDF
+branding:
+  icon: file-text
+  color: gray-dark
+inputs:
+  input:
+    description: Markdown 文件路径，相对于工作区
+    required: true
+  output:
+    description: PDF 输出路径，默认与输入文件同名
+    required: false
+  compact:
+    description: 使用紧凑排版（true 或 false）
+    required: false
+    default: 'false'
+  margin:
+    description: 四周页边距，单位 mm
+    required: false
+  line-height:
+    description: 正文行距倍数
+    required: false
+  paragraph-spacing:
+    description: 段落上下间距，单位 px
+    required: false
+  font-size:
+    description: 正文字号，单位 px
+    required: false
+  browser:
+    description: Chrome、Chromium 或 Edge 可执行文件路径
+    required: false
+outputs:
+  pdf:
+    description: 输出 PDF 的绝对路径
+    value: ${{ steps.export.outputs.pdf }}
+runs:
+  using: composite
+  steps:
+    - name: 安装 Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+    - name: 安装依赖
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: npm ci --omit=dev --no-audit --no-fund
+    - name: 导出 PDF
+      id: export
+      shell: bash
+      env:
+        TOOL_ACTION_PATH: ${{ github.action_path }}
+        TOOL_INPUT: ${{ inputs.input }}
+        TOOL_OUTPUT: ${{ inputs.output }}
+        TOOL_COMPACT: ${{ inputs.compact }}
+        TOOL_MARGIN: ${{ inputs.margin }}
+        TOOL_LINE_HEIGHT: ${{ inputs.line-height }}
+        TOOL_PARAGRAPH_SPACING: ${{ inputs.paragraph-spacing }}
+        TOOL_FONT_SIZE: ${{ inputs.font-size }}
+        TOOL_BROWSER: ${{ inputs.browser }}
+      run: node "$TOOL_ACTION_PATH/scripts/action.mjs"
