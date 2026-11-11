@@ -24,7 +24,7 @@ try {
     'line-height': { type: 'string' }, 'paragraph-spacing': { type: 'string' }, 'font-size': { type: 'string' }
   }});
   if (values.help) console.log(help);
-  else if (values.version) console.log('1.1.0');
+  else if (values.version) console.log('1.2.0');
   else {
     if (positionals.length !== 1) throw new Error('请指定一个 Markdown 文件。使用 --help 查看用法。');
     const input = resolve(positionals[0]);

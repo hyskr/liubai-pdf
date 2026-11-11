@@ -6,6 +6,14 @@
 
 需要 Node.js 22.12 或更新版本，以及 Google Chrome、Chromium 或 Microsoft Edge。
 
+从 [GitHub Releases](https://github.com/hyskr/liubai-pdf/releases) 安装 CLI：
+
+```bash
+npm install -g https://github.com/hyskr/liubai-pdf/releases/download/v1.2.0/liubai-pdf-cli-1.2.0.tgz
+```
+
+也可以从源码安装：
+
 ```bash
 git clone https://github.com/hyskr/liubai-pdf.git
 cd liubai-pdf
@@ -40,3 +48,7 @@ liubai-pdf article.md --margin 15 --line-height 1.7 --paragraph-spacing 10 --fon
 ## 许可
 
 MIT。排版样式参考并移植自 [echoVic/liubai](https://github.com/echoVic/liubai)，原项目许可见 [THIRD_PARTY_LICENSE](THIRD_PARTY_LICENSE)。
+
+## 发布
+
+推送 `v` 开头的版本标签后，GitHub Actions 自动测试、打包并将 npm 安装包上传到 GitHub Releases。
