@@ -40,27 +40,3 @@ liubai-pdf article.md --margin 15 --line-height 1.7 --paragraph-spacing 10 --fon
 ## 许可
 
 MIT。排版样式参考并移植自 [echoVic/liubai](https://github.com/echoVic/liubai)，原项目许可见 [THIRD_PARTY_LICENSE](THIRD_PARTY_LICENSE)。
-
-## GitHub Action
-
-在 GitHub Actions 中将仓库里的 Markdown 导出为 PDF。执行器需要安装 Chrome 或 Chromium；使用中文时建议安装中文字体。
-
-```yaml
-steps:
-  - uses: actions/checkout@v4
-  - name: 安装中文字体
-    run: sudo apt-get update && sudo apt-get install -y fonts-noto-cjk
-  - uses: hyskr/liubai-pdf@v1
-    id: pdf
-    with:
-      input: docs/article.md
-      output: docs/article.pdf
-      compact: 'true'
-      margin: '15'
-  - uses: actions/upload-artifact@v4
-    with:
-      name: article-pdf
-      path: ${{ steps.pdf.outputs.pdf }}
-```
-
-`input` 为必填项；`output`、`compact`、`margin`、`line-height`、`paragraph-spacing`、`font-size` 和 `browser` 为可选项，与 CLI 参数含义相同。Action 的 `pdf` 输出为生成文件的绝对路径。
